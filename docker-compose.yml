@@ -1,0 +1,18 @@
+services:
+  artifactory-smb:
+    build: .
+    image: artifactory-smb:latest
+    container_name: artifactory-smb
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${SMB_PORT:-445}:445"
+    devices:
+      - /dev/fuse:/dev/fuse
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      # On-disk cache for ranges that were actually read (CACHE_MODE=full).
+      - ${CACHE_DIR:-./cache}:/cache
