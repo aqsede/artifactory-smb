@@ -12,7 +12,8 @@ RUN apt-get update \
 
 COPY --from=rclone /usr/local/bin/rclone /usr/local/bin/rclone
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY diag.sh /diag.sh
+RUN chmod +x /entrypoint.sh /diag.sh
 
 EXPOSE 445
 VOLUME ["/cache"]

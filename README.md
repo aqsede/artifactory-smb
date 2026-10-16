@@ -48,6 +48,20 @@ docker exec artifactory-smb dd if=/mnt/art/path/to/big.bin bs=1M skip=500 count=
 Then check Artifactory's request log (or `RCLONE_LOG_LEVEL=DEBUG`): you should see
 ranged GETs, not a full download.
 
+## Folders show up but are empty
+
+rclone's http backend sends a HEAD request for every file in a listing and silently drops
+any file whose HEAD fails (folders need no request, so they always appear). Run:
+
+```bash
+docker compose up -d --build        # picks up diag.sh
+docker exec artifactory-smb /diag.sh            # repo root
+docker exec artifactory-smb /diag.sh some/folder # a folder that has files
+```
+
+It prints the listing status, the links found, the HEAD result per file (including any
+redirect to storage), and rclone's own "skipping because of error" lines.
+
 ## Tuning
 
 | Variable | Effect |
@@ -73,5 +87,6 @@ ranged GETs, not a full download.
 ## Files
 
 - `Dockerfile` – Debian + Samba + rclone binary
+- `diag.sh` – troubleshooting helper
 - `entrypoint.sh` – config from env, auth probe, mount, start Samba, supervise both
 - `docker-compose.yml`, `.env.example` – deployment and settings
